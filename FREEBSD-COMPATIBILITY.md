@@ -250,6 +250,99 @@ Lean4-mode specific keybindings:
 
 For more details, see the [lean4-mode README](https://github.com/leanprover-community/lean4-mode).
 
+## Additional Resources
+
+### Official Documentation
+
+- [Lean4 Documentation](https://lean-lang.org/documentation/) - Official documentation for Lean4
+- [Lean4 Manual](https://lean-lang.org/lean4/doc/) - Comprehensive manual for Lean4
+- [Theorem Proving in Lean4](https://lean-lang.org/theorem_proving_in_lean4/) - Introduction to theorem proving
+- [Functional Programming in Lean](https://lean-lang.org/functional_programming_in_lean/) - Introduction to functional programming
+
+### Community Resources
+
+- [Lean4 GitHub Repository](https://github.com/leanprover/lean4) - Source code for Lean4
+- [Lean4 Mode GitHub Repository](https://github.com/leanprover-community/lean4-mode) - Source code for Lean4 Emacs mode
+- [Lean Zulip Chat](https://leanprover.zulipchat.com/) - Community chat for Lean users
+- [Lean Stack Exchange](https://leanprover.github.io/lean4/doc/how_to_get_help.html) - Q&A for Lean users
+
+### FreeBSD Specific Resources
+
+- [FreeBSD Ports Collection](https://www.freebsd.org/ports/) - Information about FreeBSD ports
+- [FreeBSD Handbook: Packages and Ports](https://docs.freebsd.org/en/books/handbook/ports/) - Guide to installing software on FreeBSD
+- [FreeBSD Forums](https://forums.freebsd.org/) - Community forums for FreeBSD users
+
+### Troubleshooting References
+
+- [LSP Mode Documentation](https://emacs-lsp.github.io/lsp-mode/) - Documentation for LSP mode in Emacs
+- [Lean4 Debugging Guide](https://lean-lang.org/lean4/doc/dev/debugging.html) - Guide for debugging Lean4 issues
+- [FreeBSD Debugging Applications](https://docs.freebsd.org/en/books/developers-handbook/debugging/) - Guide for debugging applications on FreeBSD
+- [Lean Lake Documentation](https://github.com/leanprover/lake) - Documentation for the Lake build tool
+
+### Common Troubleshooting Steps
+
+#### LSP Server Connection Issues
+
+If you encounter issues with the language server connection:
+
+1. Check if Lake is working correctly:
+   ```bash
+   lake --version
+   ```
+
+2. Try running the language server manually:
+   ```bash
+   lake serve
+   ```
+
+3. Enable LSP debugging in Emacs:
+   ```elisp
+   (setq lsp-log-io t)
+   ```
+
+4. Check the LSP logs:
+   ```
+   M-x lsp-workspace-show-log
+   ```
+
+#### Missing Definitions or Hover Information
+
+If code navigation or hover information isn't working:
+
+1. Make sure the project builds correctly:
+   ```bash
+   lake build
+   ```
+
+2. Try restarting the LSP server:
+   ```
+   M-x lsp-workspace-restart
+   ```
+
+3. Ensure file dependencies are refreshed:
+   ```
+   C-c C-d (lean4-refresh-file-dependencies)
+   ```
+
+#### Syntax Highlighting Issues
+
+If syntax highlighting isn't working correctly:
+
+1. Ensure lean4-mode is properly loaded:
+   ```
+   M-x describe-mode
+   ```
+
+2. Try enabling semantic tokens explicitly:
+   ```elisp
+   (setq-local lsp-semantic-tokens-enable t)
+   ```
+
+3. Restart Emacs with minimal configuration:
+   ```bash
+   emacs -Q --load ./.emacs-project.el Maze.lean
+   ```
+
 ## Reporting Issues
 
 If you encounter any issues running this project on FreeBSD, please file an issue with the following information:
