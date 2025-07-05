@@ -54,9 +54,14 @@ test-tmux:
 	@echo "Sending keystrokes to accept local variables..."
 	@tmux send-keys -t lean_test 'y'
 	@sleep 2
+	@echo "Sending keystrokes to accept LSP server restart..."
+	@tmux send-keys -t lean_test 'y'
+	@sleep 5
 	@echo "Capturing updated screen state..."
 	@tmux capture-pane -t lean_test -p > /tmp/emacs_screen_after.txt
+	@echo "Saving screenshot to screenshot.txt..."
+	@tmux capture-pane -t lean_test -p > screenshot.txt
 	@echo "Cleaning up tmux session..."
 	@tmux kill-session -t lean_test
-	@echo "Test complete. Screen captures saved to /tmp/emacs_screen.txt and /tmp/emacs_screen_after.txt"
+	@echo "Test complete. Screen captures saved to /tmp/emacs_screen.txt, /tmp/emacs_screen_after.txt, and screenshot.txt"
 	@echo "Examine these files to verify Emacs and Lean4 mode are working correctly."

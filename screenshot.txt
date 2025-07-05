@@ -1,0 +1,24 @@
+File Edit Options Buffers Tools Lean 4 Help
+import Lean
+
+-- Coordinates in a two dimensional grid. ⟨0,0⟩ is the upper left.
+structure Coords where
+  x : Nat -- column number
+  y : Nat -- row number
+deriving BEq
+
+structure GameState where
+  size     : Coords      -- coordinates of bottom-right cell
+  position : Coords      -- row and column of the player
+  walls    : List Coords -- maze cells that are not traversible
+
+-- We define custom syntax for GameState.
+
+declare_syntax_cat game_cell
+declare_syntax_cat game_cell_sequence
+declare_syntax_cat game_row
+declare_syntax_cat horizontal_border
+declare_syntax_cat game_top_row
+-∏UUU:---  F1  Maze.lean      Top   L1    Git-main  (Lean 4 LSP[Disconnected] co
+Server lean4-lsp:11082/starting exited (check corresponding stderr buffer for d\
+etails). Do you want to restart it? (y or n) y
