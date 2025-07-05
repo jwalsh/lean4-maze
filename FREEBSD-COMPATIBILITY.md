@@ -129,14 +129,65 @@ Lake version 5.0.0-src (Lean version 4.12.0)
 ...
 ```
 
-This is promising, as Lake can be used to build and work with Lean4 projects. It also includes a language server feature:
-```
-$ lake serve
+#### Language Server Resolution
+
+Looking at the `lean4-mode.el` source code reveals how the language server is determined:
+
+```elisp
+(defun lean4--server-cmd ()
+  "Return Lean server command.
+If found lake version at least 3.1.0, then return '/path/to/lake serve',
+otherwise return '/path/to/lean --server'."
+  (condition-case nil
+      (if (string-version-lessp (car (process-lines (lean4-get-executable "lake") "--version")) "3.1.0")
+          `(,(lean4-get-executable lean4-executable-name) "--server")
+        `(,(lean4-get-executable "lake") "serve"))
+    (error `(,(lean4-get-executable lean4-executable-name) "--server"))))
 ```
 
-This could potentially be used as an alternative to the missing `lean-language-server` binary for IDE integration. Further investigation is needed to resolve these issues for full IDE integration.
+This shows that:
+1. For Lake versions 3.1.0 and above, Lean4 mode uses `lake serve` as the language server
+2. For earlier versions, it uses `lean --server`
+
+Since Lake works properly on our FreeBSD installation (version 5.0.0) but the Lean executable doesn't, we've configured our `.emacs-project.el` to explicitly use `lake serve` as the language server command:
+
+```elisp
+(setq lsp-lean4-server-command '("lake" "serve"))
+```
+
+This should allow Emacs to connect to the language server for Lean4 projects, even though the standard `lean` executable isn't functioning properly on FreeBSD.
 
 ## Setup Details
+
+### MCP (Model Context Protocol) Integration
+
+The [lean-lsp-mcp](https://github.com/oOo0oOo/lean-lsp-mcp) project provides a Model Context Protocol (MCP) server for integrating Lean theorem prover with AI assistants. This can be particularly helpful for interacting with the Lean4 Maze project.
+
+To use it with Claude Code:
+
+1. Install uv (Python package manager):
+   ```bash
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   ```
+
+2. Make sure your Lean project builds:
+   ```bash
+   lake build
+   ```
+
+3. Configure Claude Code to use the MCP server:
+   ```bash
+   claude mcp add lean-lsp uvx lean-lsp-mcp -e LEAN_PROJECT_PATH=$PWD
+   ```
+
+For other AI assistants or IDEs like VSCode, see the [lean-lsp-mcp README](https://github.com/oOo0oOo/lean-lsp-mcp) for specific setup instructions.
+
+The MCP server provides several useful tools for working with Lean projects:
+- File interaction (viewing contents, diagnostic messages, proof goals)
+- External search tools for finding theorems and definitions
+- Project-level tools like building projects
+
+This integration is particularly valuable on FreeBSD where the standard Lean4 executable and language server have some issues.
 
 ### Makefile
 
@@ -168,6 +219,36 @@ Since the standard `lean-language-server` binary is not available on FreeBSD, th
 ```
 
 This should allow Emacs to connect to a language server for Lean4 projects. When opening Maze.lean in Emacs, you should see syntax highlighting, and with the language server running, code completion and other IDE features should be available.
+
+#### Useful Keybindings
+
+The following LSP-mode keybindings are available when working with Lean files in Emacs:
+
+| Keybinding | Description |
+|------------|-------------|
+| `C-c C-h` | Display hover information at point |
+| `C-c C-p` | Navigate to previous location in file |
+| `C-c C-n` | Navigate to next location in file |
+| `C-c .` | Find definition |
+| `C-c ,` | Find references |
+| `C-c C-r` | Rename symbol |
+| `C-c C-a` | Execute code action |
+| `C-c C-d` | Show documentation for symbol at point |
+| `C-c C-l` | Show diagnostics (errors and warnings) |
+| `M-RET` | Show code actions |
+
+For a complete list of keybindings, see the [LSP Mode keybindings documentation](https://emacs-lsp.github.io/lsp-mode/page/keybindings/).
+
+Lean4-mode specific keybindings:
+| Keybinding | Description |
+|------------|-------------|
+| `C-c C-g` | Show goal at point |
+| `C-c C-i` | Show info at point |
+| `C-c C-t` | Show type at point |
+| `C-c SPC` | Fill placeholder |
+| `C-c C-SPC` | Show all goals |
+
+For more details, see the [lean4-mode README](https://github.com/leanprover-community/lean4-mode).
 
 ## Reporting Issues
 
