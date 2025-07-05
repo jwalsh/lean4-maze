@@ -1,4 +1,4 @@
-.PHONY: deps help check-lean check-emacs test-emacs-config edit test-tmux
+.PHONY: deps help check-lean check-emacs test-emacs-config edit test-tmux test-python
 
 help:
 	@echo "Available targets:"
@@ -8,6 +8,7 @@ help:
 	@echo "  test-emacs-config - Test if Emacs can load the project config"
 	@echo "  edit              - Launch Emacs to edit Maze.lean with Lean4 mode"
 	@echo "  test-tmux         - Run automated testing using tmux"
+	@echo "  test-python       - Run Python LeanClient test"
 	@echo "  help              - Show this help message"
 
 deps: check-lean check-emacs test-emacs-config
@@ -65,3 +66,16 @@ test-tmux:
 	@tmux kill-session -t lean_test
 	@echo "Test complete. Screen captures saved to /tmp/emacs_screen.txt, /tmp/emacs_screen_after.txt, and screenshot.txt"
 	@echo "Examine these files to verify Emacs and Lean4 mode are working correctly."
+
+test-python:
+	@echo "Running Python LeanClient test..."
+	@if [ ! -d .venv ]; then \
+		echo "Creating Python virtual environment..."; \
+		uv venv; \
+	fi
+	@if ! .venv/bin/pip show leanclient > /dev/null 2>&1; then \
+		echo "Installing leanclient..."; \
+		.venv/bin/pip install leanclient; \
+	fi
+	@echo "Running maze.py..."
+	@.venv/bin/python maze.py

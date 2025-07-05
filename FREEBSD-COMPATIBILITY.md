@@ -159,6 +159,60 @@ This should allow Emacs to connect to the language server for Lean4 projects, ev
 
 ## Setup Details
 
+### Lean Language Server Protocol (LSP) Integration
+
+Lean4 implements the Language Server Protocol (LSP) to provide IDE features such as code completion, diagnostics, and goal information. On FreeBSD, we've identified a few nuances with the LSP implementation:
+
+1. The standard Lean LSP server is typically accessed via:
+   - `lean --server` (for older versions)
+   - `lake serve` (for Lake 3.1.0 and newer)
+
+2. In our FreeBSD setup, we're using `lake serve` since:
+   - The `lean` executable has issues on FreeBSD
+   - Lake 5.0.0 is installed and working correctly
+
+#### LSP Implementation Details
+
+The Lean4 LSP server provides several capabilities:
+- File change notifications and incremental parsing
+- Diagnostics (errors, warnings, infos)
+- Hover information
+- Go-to-definition
+- Find references
+- Completion suggestions
+- Goal state information for theorem proving
+
+The language server works by maintaining an in-memory representation of Lean modules and processing changes incrementally, which is essential for the interactive nature of Lean theorem proving.
+
+### Python LeanClient Integration
+
+We've included a Python integration with LeanClient to demonstrate programmatic interaction with the Lean Language Server:
+
+1. Install the leanclient package:
+   ```bash
+   uv init
+   uv venv
+   uv pip install leanclient
+   ```
+
+2. Use the provided `maze.py` script to interact with the Lean server:
+   ```bash
+   # Either manually:
+   source .venv/bin/activate
+   python maze.py
+   
+   # Or using the Makefile target:
+   make test-python
+   ```
+
+This allows you to:
+- Query goal states programmatically
+- Make document changes
+- Get diagnostic information
+- Interact with Lean through Python scripts
+
+The FreeBSD setup has been tested with Python 3.11.11, which works well with leanclient.
+
 ### MCP (Model Context Protocol) Integration
 
 The [lean-lsp-mcp](https://github.com/oOo0oOo/lean-lsp-mcp) project provides a Model Context Protocol (MCP) server for integrating Lean theorem prover with AI assistants. This can be particularly helpful for interacting with the Lean4 Maze project.
@@ -198,6 +252,8 @@ The repository includes a Makefile with the following targets:
 - `check-emacs`: Check Emacs installation
 - `test-emacs-config`: Test if Emacs can load the project config
 - `edit`: Launch Emacs to edit Maze.lean with Lean4 mode
+- `test-tmux`: Run automated testing using tmux (generates a screenshot)
+- `test-python`: Run Python LeanClient test to interact with Lean LSP
 - `help`: Show all available targets
 
 ### Emacs Integration
@@ -258,6 +314,8 @@ For more details, see the [lean4-mode README](https://github.com/leanprover-comm
 - [Lean4 Manual](https://lean-lang.org/lean4/doc/) - Comprehensive manual for Lean4
 - [Theorem Proving in Lean4](https://lean-lang.org/theorem_proving_in_lean4/) - Introduction to theorem proving
 - [Functional Programming in Lean](https://lean-lang.org/functional_programming_in_lean/) - Introduction to functional programming
+- [Lean Language Server Protocol (LSP)](https://github.com/leanprover/lean4/blob/master/src/Lean/Server/README.md) - Documentation for Lean4's LSP implementation
+- [LeanClient Documentation](https://leanclient.readthedocs.io/en/latest/) - Python library for interacting with Lean4's LSP
 
 ### Community Resources
 
